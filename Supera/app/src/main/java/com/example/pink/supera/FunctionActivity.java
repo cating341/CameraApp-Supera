@@ -17,16 +17,27 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.opencv.android.Utils;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.Size;
+import org.opencv.imgproc.Imgproc;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import static org.opencv.imgproc.Imgproc.GaussianBlur;
+import static org.opencv.imgproc.Imgproc.cvtColor;
 
 public class FunctionActivity extends Activity implements View.OnClickListener {
     private FuncUI UI;
     private String type;
     private String imgPath;
     private Bitmap image;
+    Mat imgMat;
+
     public double window_W, window_H;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,13 +61,11 @@ public class FunctionActivity extends Activity implements View.OnClickListener {
         intent_camera.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(tmpFile));
         startActivityForResult(intent_camera, 0);*/
 
-        //Intent intent = this.getIntent();
-        //String type = intent.getStringExtra("type");
         Bundle bundle = getIntent().getExtras();
         type = bundle.getString("type");
 
-        TextView tv = (TextView)findViewById(R.id.textView);
-        tv.setText(type);
+
+        UI.textView.setText(type);
         if(type.equals("camera")) {
             Intent intent_camera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             String mediaStorageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/";
@@ -78,8 +87,19 @@ public class FunctionActivity extends Activity implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
+        //Size size = new Size(image.getWidth(), image.getHeight());
         switch (v.getId()) {
-
+            case R.id.button:
+                image = image.copy(Bitmap.Config.ARGB_8888, true);
+                //imgMat = new Mat(image.getHeight(), image.getHeight(), CvType.CV_8UC4);
+                Utils.bitmapToMat(image, imgMat);
+                //Imgproc.Canny(imgMat,imgMatResult,123,250);
+                //Imgproc.GaussianBlur(imgMat, imgMatResult, new Size(21,21), 11, 11);
+                //cvtColor(imgMat, image, CV_BGR2GRAY);
+                //Bitmap imageResult = Bitmap.createBitmap(imgMatResult.cols(),imgMatResult.rows(),Bitmap.Config.ARGB_8888);
+                UI.imageView.setImageBitmap(image);
+                UI.textView.setText("Q__Q");
+                break;
         }
     }
     @Override
@@ -114,6 +134,13 @@ public class FunctionActivity extends Activity implements View.OnClickListener {
                 }
             }
             UI.imageView.setImageBitmap(image);
+
+            //Mat imgMat = new Mat();
+            //Mat imgMatResult = null;
+            //Utils.bitmapToMat(image, imgMat);
+            //Imgproc.GaussianBlur(imgMat, imgMatResult, new Size(21,21), 11, 11);
+            //Bitmap imageResult = Bitmap.createBitmap(imgMatResult.cols(),imgMatResult.rows(),Bitmap.Config.ARGB_8888);
+           // UI.imageView.setImageBitmap(imageResult);
         }
 
         super.onActivityResult(requestCode, resultCode, data);
